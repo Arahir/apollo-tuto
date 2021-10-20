@@ -33,6 +33,13 @@ class LaunchAPI extends RESTDataSource {
     return this.launchReducer(response[0]);
   }
 
+  async getLaunchesByYear({ launchYear }) {
+    const response = await this.get('launches', { launch_year: launchYear });
+    return Array.isArray(response)
+    ? response.map(launch => this.launchReducer(launch))
+    : [];
+  }
+
   async getLaunchesByIds({ launchIds }) {
     return Promise.all(
       launchIds.map(launchId => this.getLaunchById({ launchId })),
@@ -51,6 +58,7 @@ class LaunchAPI extends RESTDataSource {
       id: launch.flight_number || 0,
       cursor: `${launch.launch_date_unix}`,
       site: launch.launch_site && launch.launch_site.site_name,
+      launchYear: launch.launch_year,
       mission: {
         name: launch.mission_name,
         missionPatchSmall: launch.links.mission_patch_small,

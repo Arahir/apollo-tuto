@@ -8,7 +8,7 @@ const typeDefs = gql`
     mission: Mission
     rocket: Rocket
     isBooked: Boolean!
-    cursor: String
+    launchYear: String
   }
   type Rocket {
     id: ID!
@@ -42,6 +42,11 @@ const typeDefs = gql`
       after: String
     ): LaunchConnection!
     launch(id: ID!): Launch
+    launchesByYear(
+      year: String!,
+      pageSize: Int,
+      after: String
+    ): LaunchConnection
     me: User
   }
   """
