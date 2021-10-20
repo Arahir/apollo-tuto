@@ -8,7 +8,6 @@ const typeDefs = gql`
     mission: Mission
     rocket: Rocket
     isBooked: Boolean!
-    cursor: String
   }
   type Rocket {
     id: ID!
