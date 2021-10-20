@@ -24,7 +24,27 @@ module.exports = {
     },
     launch: (_, { id }, { dataSources }) =>
       dataSources.launchAPI.getLaunchById({ launchId: id }),
-    me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()
+    me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser(),
+    launchesByYear: async (_, { pageSize = 20, after, year }, { dataSources }) => {
+      const launchesForYear = await dataSources.launchAPI.getLaunchesByYear({ launchYear: year });
+      // we want these in reverse chronological order
+      launchesForYear.reverse();
+      const launches = paginateResults({
+        after,
+        pageSize,
+        results: launchesForYear
+      });
+      return {
+        launches,
+        cursor: launches.length ? launches[launches.length - 1].cursor : null,
+        // if the cursor at the end of the paginated results is the same as the
+        // last item in _all_ results, then there are no more results after this
+        hasMore: launches.length
+          ? launches[launches.length - 1].cursor !==
+          launchesForYear[launchesForYear.length - 1].cursor
+          : false
+      };
+    },
   },
   Mission: {
     // The default size is 'LARGE' if not provided
